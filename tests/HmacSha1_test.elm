@@ -3,7 +3,7 @@ module HmacSha1_test exposing (suite)
 import Bytes exposing (Bytes)
 import Bytes.Encode as E
 import Expect
-import Hex.Convert as Hex
+import Hex.Convert
 import HmacSha1
 import HmacSha1.Key
 import String
@@ -67,7 +67,7 @@ suite =
 
 hexStringToBytes : String -> Bytes
 hexStringToBytes string =
-    case Hex.toBytes string of
+    case Hex.Convert.toBytes string of
         Just bytes ->
             bytes
 
