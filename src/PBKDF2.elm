@@ -52,7 +52,11 @@ pbkdf2 ( prf, hLen ) p s c dkLen =
             t i =
                 let
                     u1 =
-                        prf p <| E.encode <| E.sequence [ E.bytes s, E.unsignedInt32 BE i ]
+                        prf p
+                            ([ E.bytes s, E.unsignedInt32 BE i ]
+                                |> E.sequence
+                                |> E.encode
+                            )
                 in
                 case c of
                     1 ->
@@ -62,16 +66,16 @@ pbkdf2 ( prf, hLen ) p s c dkLen =
                         u 2 u1 u1
 
             u : Int -> Bytes -> Bytes -> Bytes
-            u index uc acc =
+            u index previousU acc =
+                let
+                    nextU =
+                        prf p previousU
+                in
                 if index == c then
-                    xor acc (prf p uc)
+                    xor acc nextU
 
                 else
-                    let
-                        uc_ =
-                            prf p uc
-                    in
-                    u (index + 1) uc_ (xor acc uc_)
+                    u (index + 1) nextU (xor acc nextU)
         in
         ts
             |> List.map E.bytes

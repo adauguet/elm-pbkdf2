@@ -7,7 +7,6 @@ import Hex.Convert as Hex
 import HmacSha1
 import HmacSha1.Key
 import String
-import String.Extra as String
 import Test exposing (Test, describe, test)
 
 
@@ -19,13 +18,13 @@ suite =
             [ hmacSha1Test
                 { testCase = 1
                 , key = "0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b" |> hexStringToBytes |> HmacSha1.Key.fromBytes
-                , data = "Hi There" |> E.encode << E.string
+                , data = "Hi There" |> E.string |> E.encode
                 , digest = "b617318655057264e28bc0b6fb378c8ef146be00"
                 }
             , hmacSha1Test
                 { testCase = 2
                 , key = "Jefe" |> HmacSha1.Key.fromString
-                , data = "what do ya want for nothing?" |> E.encode << E.string
+                , data = "what do ya want for nothing?" |> E.string |> E.encode
                 , digest = "effcdf6ae5eb2fa2d27416d5f184df9c259a7c79"
                 }
             , hmacSha1Test
@@ -43,19 +42,19 @@ suite =
             , hmacSha1Test
                 { testCase = 5
                 , key = "0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c" |> hexStringToBytes |> HmacSha1.Key.fromBytes
-                , data = "Test With Truncation" |> E.encode << E.string
+                , data = "Test With Truncation" |> E.string |> E.encode
                 , digest = "4c1a03424b55e07fe7f27be1d58bb9324a9a5a04"
                 }
             , hmacSha1Test
                 { testCase = 6
                 , key = String.repeat 80 "aa" |> hexStringToBytes |> HmacSha1.Key.fromBytes
-                , data = "Test Using Larger Than Block-Size Key - Hash Key First" |> E.encode << E.string
+                , data = "Test Using Larger Than Block-Size Key - Hash Key First" |> E.string |> E.encode
                 , digest = "aa4ae5e15272d00e95705637ce8a3b55ed402112"
                 }
             , hmacSha1Test
                 { testCase = 7
                 , key = String.repeat 80 "aa" |> hexStringToBytes |> HmacSha1.Key.fromBytes
-                , data = "Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data" |> E.encode << E.string
+                , data = "Test Using Larger Than Block-Size Key and Larger Than One Block-Size Data" |> E.string |> E.encode
                 , digest = "e8e99d0f45237d786d6bbaa7965c7808bbff1a91"
                 }
             ]

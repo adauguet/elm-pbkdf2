@@ -6,7 +6,6 @@ import Expect
 import Hex.Convert as Hex
 import PBKDF2 exposing (hmacSha1, pbkdf2)
 import String
-import String.Extra as String
 import Test exposing (Test, describe, test)
 
 
@@ -47,15 +46,16 @@ suite =
                 }
 
             -- WARNING: this test takes a lot of times to perform
-            -- , vectorTest { title = "4"
-            --   , input =
+            -- , pbkdf2Test
+            --     { title = "4"
+            --     , input =
             --         { password = "password"
             --         , salt = "salt"
             --         , c = 16777216
             --         , dkLen = 20
             --         }
-            --   , output = "eefe3d61cd4da4e4e9945b3d6ba2158c2634e984"
-            --   }
+            --     , output = "eefe3d61cd4da4e4e9945b3d6ba2158c2634e984"
+            --     }
             , pbkdf2Test
                 { title = "5"
                 , input =
