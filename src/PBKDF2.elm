@@ -41,12 +41,10 @@ pbkdf2 ( prf, hLen ) p s c dkLen =
             l =
                 ceiling <| toFloat dkLen / toFloat hLen
 
-            _ =
-                dkLen - (l - 1) * hLen
 
             ts : List Bytes
             ts =
-                List.map (\i -> t i) (List.range 1 l)
+                List.map t (List.range 1 l)
 
             t : Int -> Bytes
             t i =
