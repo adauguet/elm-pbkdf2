@@ -1,10 +1,12 @@
-module PBKDF2_test exposing (suite)
+module Tests exposing (suite)
 
-import Bytes exposing (Endianness(..))
+import Bytes exposing (Bytes, Endianness(..))
 import Bytes.Encode as E
 import Expect
 import Hex.Convert as Hex
-import PBKDF2 exposing (hmacSha1, pbkdf2)
+import HmacSha1
+import HmacSha1.Key as Key
+import PBKDF2 exposing (pbkdf2)
 import String
 import Test exposing (Test, describe, test)
 
@@ -113,3 +115,9 @@ pbkdf2Test { title, input, output } =
                     |> Result.map String.toLower
                 )
                 (Ok output)
+
+
+hmacSha1 : Bytes -> Bytes -> Bytes
+hmacSha1 key message =
+    HmacSha1.fromBytes (Key.fromBytes key) message
+        |> HmacSha1.toBytes

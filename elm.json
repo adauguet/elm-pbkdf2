@@ -1,33 +1,18 @@
 {
-    "type": "application",
-    "source-directories": [
-        "src"
+    "type": "package",
+    "name": "adauguet/pbkdf2",
+    "summary": "A PBKDF2 implementation in Elm",
+    "license": "BSD-3-Clause",
+    "version": "1.0.0",
+    "exposed-modules": [
+        "PBKDF2"
     ],
-    "elm-version": "0.19.1",
+    "elm-version": "0.19.1 <= v < 0.20.0",
     "dependencies": {
-        "direct": {
-            "elm/bytes": "1.0.8",
-            "elm/core": "1.0.5",
-            "jxxcarlson/hex": "4.0.0",
-            "romariolopezc/elm-hmac-sha1": "3.0.0"
-        },
-        "indirect": {
-            "TSFoster/elm-sha1": "2.1.1",
-            "danfishgold/base64-bytes": "1.1.0",
-            "elm/json": "1.1.3",
-            "elm-community/list-extra": "8.2.4",
-            "rtfeldman/elm-hex": "1.0.0"
-        }
+        "elm/bytes": "1.0.8 <= v < 2.0.0",
+        "elm/core": "1.0.5 <= v < 2.0.0"
     },
     "test-dependencies": {
-        "direct": {
-            "elm-explorations/test": "1.2.2"
-        },
-        "indirect": {
-            "elm/html": "1.0.0",
-            "elm/random": "1.0.0",
-            "elm/time": "1.0.0",
-            "elm/virtual-dom": "1.0.2"
-        }
+        "elm-explorations/test": "1.2.2 <= v < 2.0.0"
     }
 }

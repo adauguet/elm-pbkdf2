@@ -1,60 +1,59 @@
 module PBKDF2 exposing
-    ( Error(..)
-    , PRF
-    , hmacSha1
-    , pbkdf2
+    ( pbkdf2
+    , Error(..)
     )
+
+{-|
+
+
+# Computing pbkdf2 digest
+
+@docs pbkdf2
+
+@docs Error
+
+-}
 
 import Bitwise
 import Bytes exposing (Bytes, Endianness(..))
 import Bytes.Decode as D
 import Bytes.Encode as E
-import HmacSha1
-import HmacSha1.Key as Key
 
 
-type alias PRF =
-    Bytes -> Bytes -> Bytes
-
-
+{-| The error than can be returned
+-}
 type Error
     = DerivedKeyTooLong
     | DecodingError
 
 
-hmacSha1 : PRF
-hmacSha1 password salt =
-    let
-        key =
-            Key.fromBytes password
-    in
-    HmacSha1.fromBytes key salt |> HmacSha1.toBytes
-
-
-pbkdf2 : ( PRF, Int ) -> Bytes -> Bytes -> Int -> Int -> Result Error Bytes
-pbkdf2 ( prf, hLen ) p s c dkLen =
+{-| Computes the pbkdf2 digest
+-}
+pbkdf2 : ( Bytes -> Bytes -> Bytes, Int ) -> Bytes -> Bytes -> Int -> Int -> Result Error Bytes
+pbkdf2 ( prf, hLen ) password salt c dkLen =
     if dkLen > (2 ^ 32 - 1) * hLen then
         Err DerivedKeyTooLong
 
     else
         let
+            l : Int
             l =
                 ceiling <| toFloat dkLen / toFloat hLen
 
-
-            ts : List Bytes
+            ts : List (List Int)
             ts =
                 List.map t (List.range 1 l)
 
-            t : Int -> Bytes
+            t : Int -> List Int
             t i =
                 let
                     u1 =
-                        prf p
-                            ([ E.bytes s, E.unsignedInt32 BE i ]
+                        prf password
+                            ([ E.bytes salt, E.unsignedInt32 BE i ]
                                 |> E.sequence
                                 |> E.encode
                             )
+                            |> bytesToInts
                 in
                 case c of
                     1 ->
@@ -63,11 +62,11 @@ pbkdf2 ( prf, hLen ) p s c dkLen =
                     _ ->
                         u 2 u1 u1
 
-            u : Int -> Bytes -> Bytes -> Bytes
+            u : Int -> List Int -> List Int -> List Int
             u index previousU acc =
                 let
                     nextU =
-                        prf p previousU
+                        (prf password <| intsToBytes previousU) |> bytesToInts
                 in
                 if index == c then
                     xor acc nextU
@@ -76,39 +75,41 @@ pbkdf2 ( prf, hLen ) p s c dkLen =
                     u (index + 1) nextU (xor acc nextU)
         in
         ts
-            |> List.map E.bytes
-            |> E.sequence
-            |> E.encode
+            |> List.concat
+            |> intsToBytes
             |> D.decode (D.bytes dkLen)
             |> Result.fromMaybe DecodingError
 
 
 
--- helpers
+-- helpers, not exposed
 
 
-xor : Bytes -> Bytes -> Bytes
+xor : List Int -> List Int -> List Int
 xor a b =
-    List.map2 Bitwise.xor (fromBytes a) (fromBytes b)
-        |> toBytes
+    List.map2 Bitwise.xor a b
 
 
-fromBytes : Bytes -> List Int
-fromBytes bytes =
+intsToBytes : List Int -> Bytes
+intsToBytes =
+    E.encode << E.sequence << List.map E.unsignedInt8
+
+
+
+-- source: https://github.com/romariolopezc/elm-hmac-sha1 internals
+
+
+bytesToInts : Bytes -> List Int
+bytesToInts bytes =
     let
-        decoder_ accumulator width =
+        decoder accumulator width =
             if width == 0 then
                 D.succeed (List.reverse accumulator)
 
             else
                 D.unsignedInt8
-                    |> D.andThen (\int -> decoder_ (int :: accumulator) (width - 1))
+                    |> D.andThen (\int -> decoder (int :: accumulator) (width - 1))
     in
     bytes
-        |> D.decode (decoder_ [] (Bytes.width bytes))
+        |> D.decode (decoder [] (Bytes.width bytes))
         |> Maybe.withDefault []
-
-
-toBytes : List Int -> Bytes
-toBytes =
-    E.encode << E.sequence << List.map E.unsignedInt8
