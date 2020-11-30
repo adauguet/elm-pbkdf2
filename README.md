@@ -13,6 +13,8 @@ The algorithm will return an error if the derived key is too long.
 
 ## Example
 
+Here we are using [jxxcarlson/hex](https://package.elm-lang.org/packages/jxxcarlson/hex/latest/) and [romariolopezc/elm-hmac-sha1](https://package.elm-lang.org/packages/romariolopezc/elm-hmac-sha1/latest/).
+
 ```elm
 import Bytes.Encode as E
 import Hex.Convert as Hex
